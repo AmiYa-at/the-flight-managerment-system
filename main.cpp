@@ -1,6 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-
+#include "HuskarUI/husapp.h"
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
