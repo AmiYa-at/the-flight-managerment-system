@@ -8,6 +8,10 @@ find_package(Qt6 REQUIRED COMPONENTS Quick)
 
 find_package(HuskarUI REQUIRED)
 
+find_package(Qt6 REQUIRED COMPONENTS Quick QuickEffects)
+
+set(CMAKE_AUTORCC ON)
+
 qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appthe_flight_managerment_system
@@ -19,6 +23,7 @@ qt_add_qml_module(appthe_flight_managerment_system
     VERSION 1.0
     QML_FILES
         Main.qml
+        RESOURCES images.qrc
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -35,6 +40,7 @@ set_target_properties(appthe_flight_managerment_system PROPERTIES
 target_link_libraries(appthe_flight_managerment_system
     PRIVATE Qt6::Quick
     PRIVATE HuskarUI::Basic
+    PRIVATE Qt6::QuickEffects
 )
 
 include(GNUInstallDirs)
@@ -43,5 +49,6 @@ install(TARGETS appthe_flight_managerment_system
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
 
 
