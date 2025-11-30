@@ -1,7 +1,9 @@
 import QtQuick
+import HuskarUI.Basic
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
+import QtQml
 
 Window {
     id: loginWindow
