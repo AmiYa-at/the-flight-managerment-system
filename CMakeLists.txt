@@ -22,7 +22,7 @@ qt_add_qml_module(appthe_flight_managerment_system
     URI the_flight_managerment_system
     VERSION 1.0
     QML_FILES
-        Main.qml
+    Login.qml
         RESOURCES images.qrc
 )
 
