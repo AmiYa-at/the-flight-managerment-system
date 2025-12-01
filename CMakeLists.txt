@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 
+find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2)
+
 find_package(HuskarUI REQUIRED)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick QuickEffects)
@@ -27,6 +29,7 @@ qt_add_qml_module(appthe_flight_managerment_system
     MyFavouriteFlight.qml
     AboutUs.qml
     RESOURCES images.qrc
+
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -42,6 +45,7 @@ set_target_properties(appthe_flight_managerment_system PROPERTIES
 
 target_link_libraries(appthe_flight_managerment_system
     PRIVATE Qt6::Quick
+    PRIVATE Qt6::QuickControls2
     PRIVATE HuskarUI::Basic
     PRIVATE Qt6::QuickEffects
 )

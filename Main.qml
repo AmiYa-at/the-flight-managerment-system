@@ -2,9 +2,12 @@ import QtQuick
 import QtQuick.Layouts
 import QtQml
 import HuskarUI.Basic
+import QtQuick.Controls
+
 
 HusWindow{
     property var initModel :[]
+    id:mainWindow
     width: 1080
     height: 720
     minimumWidth: 1080

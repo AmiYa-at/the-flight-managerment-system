@@ -1,21 +1,23 @@
 import QtQuick
 import HuskarUI.Basic
-import QtQuick.Controls
+import QtQuick.Controls 2.15
 import QtQuick.Layouts
 import QtQuick.Effects
 import QtQml
+
 
 Window {
     id: loginWindow
     width: 800
     height: 450
-    visible: true
+    visible: controlSignal
     title: qsTr("登录系统")
 
 
     minimumWidth: 800
     minimumHeight: 450
 
+    property bool controlSignal:true
 
     // 定义状态枚举
     readonly property string loginState: "login"
@@ -122,10 +124,7 @@ Window {
                     target: welcomeText
                     visible: false
                 }
-                PropertyChanges {
-                    target: adminTitle
-                    visible: true
-                }
+
             }
         ]
 
@@ -142,7 +141,7 @@ Window {
     Rectangle {
         id: textBackground
         width: 280
-        height: registerState === dynamicBackground.state ? 420 : 350
+        height: registerState === dynamicBackground.state ? 420 : 380
         color: "#80FFFFFF"
         //opacity: 0.5
         radius: 12
@@ -151,7 +150,7 @@ Window {
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenterOffset: -200
+        anchors.horizontalCenterOffset: -parent.width/4
 
         state: loginState
 
@@ -296,6 +295,55 @@ Window {
                 }
             }
 
+            // 记住密码选项（仅在用户登录时显示）
+            Row {
+                id: rememberPasswordRow
+                width: parent.width
+                spacing: 100
+                visible: dynamicBackground.state === loginState
+                leftPadding: 2
+
+                CheckBox {
+                    id: rememberPasswordCheck
+                    //自动登录选中时自动选中
+                    checked: autoLoginCheck.checked
+                    indicator.width: 16
+                    indicator.height: 16
+
+                    contentItem: Text {
+                        text: qsTr("记住密码")
+                        font.pointSize: 9
+                        color: "#666666"
+                        verticalAlignment: Text.AlignVCenter
+                        leftPadding: rememberPasswordCheck.indicator.width + rememberPasswordCheck.spacing
+                    }
+                }
+
+                //自动登录选项（仅在用户登录显示）
+                CheckBox {
+                    id: autoLoginCheck
+                    checked: false
+                    indicator.width: 16
+                    indicator.height: 16
+
+
+
+                    contentItem: Text {
+                        text: qsTr("自动登录")
+                        font.pointSize: 9
+                        color: "#666666"
+                        verticalAlignment: Text.AlignVCenter
+                        leftPadding: autoLoginCheck.indicator.width + autoLoginCheck.spacing
+                    }
+                }
+            }
+
+
+
+
+
+
+
             // 操作按钮
             Button {
                 id: actionButton
@@ -393,16 +441,15 @@ Window {
                 name: loginState
                 PropertyChanges {
                     target: textBackground
-                    anchors.horizontalCenterOffset: -200
-                    height: 350
+                    anchors.horizontalCenterOffset: -parent.width/4
+                    height: 380
                 }
             },
             State {
                 name: registerState
                 PropertyChanges {
                     target: textBackground
-                    anchors.horizontalCenterOffset: 200
-                    height: 420
+                    anchors.horizontalCenterOffset: parent.width/4
                 }
             },
             State {
@@ -481,8 +528,10 @@ Window {
         title: "找回密码"
         modal: true
         standardButtons: Dialog.Ok | Dialog.Cancel
-        anchors.centerIn: Overlay.overlay
+        anchors.centerIn: parent
         width: 400
+        dim:true
+        closePolicy: Dialog.NoAutoClose
 
         Column {
             width: parent.width
@@ -552,6 +601,63 @@ Window {
         }
 
 
+
+        }
+
+    //错误弹窗
+    Dialog{
+        id:errorDialog
+        title: "错误"
+        modal: true
+        standardButtons: Dialog.Ok
+        anchors.centerIn: parent
+        width: 200
+        dim: true
+        closePolicy: Dialog.NoAutoClose
+        Text{
+            id:loginErrorText
+            anchors.centerIn: parent
+            text:"登陆失败，用户名或密码错误"
+            state:"loginError"
+            states:[
+                State{
+                    name:"loginError"
+                    PropertyChanges {
+                        target: loginErrorText
+                        text:"登陆失败，用户名或密码错误"
+                    }
+                },
+                State{
+                    name:"registerError_passwords_different"
+                    PropertyChanges {
+                        target: loginErrorText
+                        text:"密码不一致"
+                    }
+                },
+                State{
+                    name:"cannot_find_username"
+                    PropertyChanges {
+                        target: loginErrorText
+                        text:"用户名不存在"
+                    }
+                },
+                State{
+                    name:"too_short_password"
+                    PropertyChanges {
+                        target: loginErrorText
+                        text:"密码不能少于6位"
+                    }
+                }
+
+            ]
+        }
+
+
+    }
+
+    Loader{
+        id:windowLoader
+
     }
 
     // 状态切换函数
@@ -578,31 +684,14 @@ Window {
     }
 
     function handleAction() {
-        switch(dynamicBackground.state) {
-            case loginState:
-                if (validateLogin()) {
-                    console.log("用户登录:", usernameInput.text)
-                    // 这里添加登录逻辑
-                }
-                break
-            case registerState:
-                if (validateRegister()) {
-                    console.log("用户注册:", usernameInput.text, "邮箱:", emailInput.text)
-                    // 这里添加注册逻辑
-                }
-                break
-            case adminState:
-                if (validateLogin()) {
-                    console.log("管理员登录:", usernameInput.text)
-                    // 这里添加管理员登录逻辑
-                }
-                break
-        }
+        windowLoader.source="Main.qml"
+        controlSignal=false
     }
 
     function validateLogin() {
         if (usernameInput.text.trim() === "") {
             showError("请输入用户名")
+
             return false
         }
         if (passwordInput.text === "") {
@@ -615,6 +704,7 @@ Window {
     function validateRegister() {
         if (usernameInput.text.trim() === "") {
             showError("请输入用户名")
+
             return false
         }
         if (emailInput.text.trim() === "") {
