@@ -122,6 +122,9 @@ HusWindow{
                         if(key==="about_us"){
                             right_page.source="AboutUs.qml"
                         }
+                        if(key==="discover"){
+                            right_page.source="Discovery.qml"
+                        }
 
                         console.log("jimi");
                     }
