@@ -535,7 +535,7 @@ Window {
         width: 400
         dim:true
         closePolicy: Dialog.NoAutoClose
-
+        onAccepted: handleForgetPassword()
         Column {
             width: parent.width
             spacing: 15
@@ -582,7 +582,7 @@ Window {
                 background: Rectangle {
                     radius: 6
                     border.width: 1
-                    border.color: resetEmailInput.activeFocus ? "#007bff" : "#dddddd"
+                    border.color: captchaInput.activeFocus ? "#007bff" : "#dddddd"
                     color: "white"
                 }
             }
@@ -658,10 +658,10 @@ Window {
                     }
                 },
                 State{
-                    name:"too_short_password"
+                    name:"too_week_password"
                     PropertyChanges {
                         target: errorText
-                        text:"密码不能少于6位"
+                        text:"密码至少8位，且包含字母和数字"
                     }
                 },
                 State{
@@ -695,7 +695,44 @@ Window {
                         text:"邮箱为空"
 
                     }
-                }
+                },
+                State{
+                    name:"email_exists"
+                    PropertyChanges {
+                      target: errorText
+                      text:"邮箱已注册"
+
+                    }
+                },
+                State{
+                  name:"email_invalid"
+                  PropertyChanges {
+                    target: errorText
+                    text:"邮箱格式非法"
+
+                    }
+                },
+              State{
+                name:"captcha_error"
+                PropertyChanges {
+                  target: errorText
+                  text:"验证码错误"
+                  }
+              },
+              State{
+                name:"captcha_empty"
+                PropertyChanges {
+                  target: errorText
+                  text:"验证码为空"
+                  }
+              },
+              State{
+                name:"email_not_exists"
+                PropertyChanges {
+                  target: errorText
+                  text:"邮箱未注册"
+                  }
+              }
 
             ]
         }
@@ -721,9 +758,15 @@ Window {
                     PropertyChanges {
                         target: messageText
                         text:"注册成功"
-
                     }
-                }
+                },
+              State{
+                  name:"password_reset"
+                  PropertyChanges {
+                      target: messageText
+                      text:"密码重制成功"
+                  }
+              }
             ]
         }
     }
@@ -809,24 +852,42 @@ Window {
         //注册处理
         if(dynamicBackground.state===registerState)
         {
-            if(success)
+            if(success===5)
             {
                 messageText.state="register_success"
                 messageDialog.open()
                 return ;
             }
-            else
+            else if(success===1)
             {
                 errorText.state="username_already_exists"
                 errorDialog.open()
                 return ;
+            }
+            else if(success===4)
+            {
+                errorText.state="email_exists"
+                errorDialog.open()
+                return ;
+            }
+            else if(success===3)
+            {
+              errorText.state="too_week_password"
+              errorDialog.open()
+              return ;
+            }
+            else if(success===2)
+            {
+              errorText.state="email_invalid"
+              errorDialog.open()
+              return ;
             }
         }
 
         //用户登录
         if(dynamicBackground.state===loginState)
         {
-            if (success) {
+            if (success===4) {
                 const mainComponent = Qt.createComponent("Main.qml");
                 if(mainComponent.status === Component.Ready) {
                     const mainWindow = mainComponent.createObject(null);
@@ -866,17 +927,72 @@ Window {
 
     }
 
+    function handleForgetPassword()
+    {
+      if(resetEmailInput.text==="")
+      {
+        errorText.state="empty_email"
+        errorDialog.open()
 
+        return ;
+      }
 
-    function isValidEmail(email) {
-        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        return emailRegex.test(email)
+      if(captchaInput.text==="")
+      {
+        errorText.state="captcha_empty"
+        errorDialog.open()
+        return ;
+      }
+      if(regain_password.text==="")
+      {
+        errorText.state="empty_password"
+        errorDialog.open()
+        return ;
+      }
+      if(regain_confirm_password.text!==regain_password.text)
+      {
+        errorText.state="passwords_different"
+        errorDialog.open()
+        return ;
+      }
+      var code=DBManger.forgetPassword(resetEmailInput.text,captchaInput.text,regain_password.text)
+      if(code===1)
+      {
+        errorText.state="email_invalid"
+        errorDialog.open()
+        return ;
+      }
+      else if(code===2)
+      {
+        errorText.state="email_not_exists"
+        errorDialog.open()
+        return ;
+      }
+      else if(code===3)
+      {
+        errorText.state="captcha_error"
+        errorDialog.open()
+        return ;
+      }
+      else if(code===4)
+      {
+        errorText.state="too_week_password"
+        errorDialog.open()
+        return ;
+      }
+      else if(code===7)
+      {
+        messageText.state="password_reset"
+        messageDialog.open()
+        return ;
+      }
+
     }
 
-    function showError(message) {
-        // 这里可以添加错误提示UI
-        console.log("错误:", message)
-    }
+
+
+
+
 
     function clearInputs() {
         usernameInput.text = ""
