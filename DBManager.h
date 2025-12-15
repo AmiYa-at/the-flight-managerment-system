@@ -54,6 +54,7 @@ public:
         );  // 添加航班
     Q_INVOKABLE bool updateFlightPrice(const QString& Flight_id, double newPrice);  // 更新价格
     Q_INVOKABLE bool updateFlightSeats(const QString& Flight_id, int newRemainSeats);  // 更新剩余座位
+    Q_INVOKABLE bool updateFlightStatus(const QString& Flight_id, const QString& newststus);  // 更新航班状态
     Q_INVOKABLE bool deleteFlight(const QString& Flight_id);    // 删除航班
 
     Q_INVOKABLE void printFlight(const QVariantMap &flight);  // 打印航班

@@ -459,7 +459,7 @@ QVariantList DBManager::queryAllFlights()
 
     QString sql = R"(
         SELECT Flight_id, Departure, Destination, depart_time, arrive_time,
-               price, total_seats, remain_seats
+               status, price, total_seats, remain_seats
         FROM flight
         ORDER BY depart_time DESC
     )";
@@ -479,6 +479,7 @@ QVariantList DBManager::queryAllFlights()
             flight["destination"] = query.value("Destination").toString();
             flight["departTime"] = query.value("depart_time").toDateTime().toString("yyyy-MM-dd HH:mm:ss");
             flight["arriveTime"] = query.value("arrive_time").toDateTime().toString("yyyy-MM-dd HH:mm:ss");
+            flight["status"] = query.value("status").toString();
             flight["price"] = query.value("price").toDouble();
             flight["totalSeats"] = query.value("total_seats").toInt();
             flight["remainSeats"] = query.value("remain_seats").toInt();
@@ -508,7 +509,7 @@ QVariantMap DBManager::queryFlightByNum(const QString& flightId)
     QSqlQuery query(m_db);
     QString sql = R"(
         SELECT Flight_id, Departure, Destination, depart_time, arrive_time,
-               price, total_seats, remain_seats
+               status, price, total_seats, remain_seats
         FROM flight
         WHERE Flight_id = :flightId
     )";
@@ -527,6 +528,7 @@ QVariantMap DBManager::queryFlightByNum(const QString& flightId)
         result["destination"] = query.value("Destination").toString();
         result["departTime"] = query.value("depart_time").toDateTime().toString("yyyy-MM-dd HH:mm:ss");
         result["arriveTime"] = query.value("arrive_time").toDateTime().toString("yyyy-MM-dd HH:mm:ss");
+        result["status"] = query.value("status").toString();
         result["price"] = query.value("price").toDouble();
         result["totalSeats"] = query.value("total_seats").toInt();
         result["remainSeats"] = query.value("remain_seats").toInt();
@@ -706,6 +708,43 @@ bool DBManager::updateFlightSeats(const QString& Flight_id, int newRemainSeats)
         emit operateResult(true, "航班 " + Flight_id + " 剩余座位更新为 " + QString::number(newRemainSeats) + "！");
     }
     else{
+        QString errMsg = "[DB] 更新失败：" + query.lastError().text();
+        qCritical() << errMsg;
+        emit operateResult(false, errMsg);
+    }
+    return success;
+}
+
+// 更新航班状态
+bool DBManager::updateFlightStatus(const QString& Flight_id, const QString& newststus)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if(!m_db.isOpen()){
+        emit operateResult(false, "更新失败：数据库未连接！");
+        return false;
+    }
+
+    QSqlQuery query(m_db);
+    QString sql = "UPDATE flight SET status = :newstatus WHERE Flight_id = :Flight_id";
+
+    if (!query.prepare(sql)) {
+        QString errMsg = "[DB] 更新预处理失败：" + query.lastError().text();
+        qCritical() << errMsg;
+        emit operateResult(false, errMsg);
+        return false;
+    }
+
+    query.bindValue(":newststus", newststus);
+    query.bindValue(":Flight_id", Flight_id);
+    bool success = query.exec();
+
+    if (success && query.numRowsAffected() > 0) {
+        emit operateResult(true, "航班 " + Flight_id + " 状态更新为 " + newststus + "！ ");
+    } else if (success && query.numRowsAffected() == 0) {
+        emit operateResult(false, "更新失败：未找到航班 " + Flight_id + "！");
+        success = false;
+    } else {
         QString errMsg = "[DB] 更新失败：" + query.lastError().text();
         qCritical() << errMsg;
         emit operateResult(false, errMsg);
