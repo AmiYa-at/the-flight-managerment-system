@@ -29,19 +29,22 @@ qt_add_qml_module(appthe_flight_managerment_system
     VERSION 1.0
     
     QML_FILES
-    
     Pages/Login.qml
     Pages/Main.qml
     Pages/MyFavouriteFlight.qml
     Pages/AboutUs.qml
+    Pages/Discovery.qml
+    Pages/SearchFlight.qml
     Components/SharedCard.qml
+
+
     RESOURCES images.qrc
     SOURCES 
     DBManager.cpp
     DBManager.h
-    QML_FILES Pages/Discovery.qml
-    SOURCES
-    SOURCES
+    QML_FILES Pages/AdminChangeFlightInformation.qml
+    QML_FILES Components/FlightInformationCard.qml
+
 
 )
 

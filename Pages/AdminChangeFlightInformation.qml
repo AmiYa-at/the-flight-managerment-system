@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import QtQml
 import HuskarUI.Basic
 import QtQuick.Controls
-import com.flight.db 1.0
+
 
 HusWindow{
     property var initModel :[]
@@ -54,7 +54,7 @@ HusWindow{
                     //名字
                     HusCopyableText{
                         textFormat: Text.RichText
-                        text: qsTr(DBManager.getCurrentUserName()) //此处需要适配数据库
+                        text: qsTr("<b>名字</b>") //此处需要适配数据库
                     }
                 }
             }
@@ -69,35 +69,20 @@ HusWindow{
                     Component{
                         id: abc
                         Item{
-                            implicitHeight: 195
+                            implicitHeight: 345
                             implicitWidth: parent.width
                         }
                     }
                     initModel: [
                     {
                         key:"discover",
-                        label:qsTr("发现"),
+                        label:qsTr("修改航班信息"),
                         iconSource:HusIcon.GlobalOutlined
                     },
                     {
                         key:"my_favourite_flight",
-                        label:qsTr("收藏航班"),
+                        label:qsTr("修改分享信息"),
                         iconSource:HusIcon.StarOutlined
-                    },
-                    {
-                        key:"search_flight",
-                        label:qsTr("航班查询"),
-                        iconSource:HusIcon.SearchOutlined
-                    },
-                    {
-                        key:"my_flight",
-                        label:qsTr("我的订单"),
-                        iconSource:HusIcon.ShopOutlined
-                    },
-                    {
-                        key:"share_trip",
-                        label:qsTr("旅程分享"),
-                        iconSource:HusIcon.SmileOutlined
                     },
                     {
                         enabled: false,
