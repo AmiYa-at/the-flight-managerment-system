@@ -504,7 +504,7 @@ QVariantList DBManager::queryFlightsByCondition(const QString& departure, const 
         return result;
     }
 
-    QString sql = "SELECT * FROM flights";
+    QString sql = "SELECT * FROM flight";
     QList<QString> conditions;
     QVariantMap params; // 存储参数绑定（键：参数名，值：参数值）
 
