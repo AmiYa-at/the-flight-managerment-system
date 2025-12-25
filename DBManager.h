@@ -12,6 +12,8 @@
 #include <QCryptographicHash>
 #include <QRegularExpression>
 #include <QString>
+#include <QImage>
+#include <QByteArray>
 
 // 数据库管理单例类
 class DBManager : public QObject
@@ -76,21 +78,38 @@ public:
     Q_INVOKABLE QString getCurrentUserEmail() const;  // 获取当前登录用户的邮箱
 
     Q_INVOKABLE int forgetPassword(const QString& email, const QString& verifyCode, const QString& newPassword);  // 忘记密码（验证码默认为0000）
-    // 查看我的订单
-    QVariantList queryMyOrders(int userId);
-    // 按条件查询我的订单
-    QVariantList queryMyOrdersByCondition(int userId,
-                                          const QString& flightId = QString(),
-                                          const QString& passengerName = QString(),
-                                          const QString& status = QString(),
-                                          const QString& startDate = QString(),
-                                          const QString& endDate = QString());
-    // 获取订单详情
-    QVariantMap queryOrderDetail(int userId, int orderId);
-    // 检查订单是否存在
-    bool isOrderExists(int userId, int orderId);
-    // 获取订单状态列表
-    QStringList getOrderStatusList();
+
+    Q_INVOKABLE QVariantList queryMyOrders(int userId);  // 查看我的订单
+    Q_INVOKABLE QVariantList queryMyOrdersByCondition(
+        int userId,
+        const QString& flightId = QString(),
+        const QString& passengerName = QString(),
+        const QString& status = QString(),
+        const QString& startDate = QString(),
+        const QString& endDate = QString()
+        );  // 按条件查询我的订单
+    Q_INVOKABLE QVariantMap queryOrderDetail(int userId, int orderId);  // 获取订单详情
+    Q_INVOKABLE bool isOrderExists(int userId, int orderId);  // 检查订单是否存在
+    Q_INVOKABLE QStringList getOrderStatusList();  // 获取订单状态列表
+
+    Q_INVOKABLE bool publishPost(
+        const QString& title,
+        const QString& content,
+        int userId,
+        const QByteArray& imgBlob = QByteArray(),
+        const QString& imgFormat = ""
+        );  // 发布帖子
+    Q_INVOKABLE QVariantMap queryPostDetail(int postId, int currentUserId);  // 查询帖子详情
+
+    Q_INVOKABLE bool likePost(int userId, int postId);  // 点赞
+    Q_INVOKABLE bool cancelLikePost(int userId, int postId);  // 取消点赞
+    Q_INVOKABLE bool isPostLiked(int userId, int postId);  // 是否点赞
+    Q_INVOKABLE bool favoritePost(int userId, int postId);  // 喜欢
+    Q_INVOKABLE bool cancelFavoritePost(int userId, int postId);  // 取消喜欢
+    Q_INVOKABLE bool isPostFavorited(int userId, int postId);  // 是否喜欢
+
+    Q_INVOKABLE QImage blobToImage(const QByteArray& blob, const QString& format);  // Blob转QImage
+
 signals:
     void connectionStateChanged(bool isConnected);  // 数据库连接信号
     void operateResult(bool success, const QString &msg);  // 操作结果

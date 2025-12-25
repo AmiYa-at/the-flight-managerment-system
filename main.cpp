@@ -6,6 +6,9 @@
 #include "HuskarUI/husapp.h"
 #include "DBManager.h"
 #include <QFile>
+#include <QQmlContext>
+#include <QImage>
+
 
 int main(int argc, char *argv[])
 {
@@ -19,6 +22,10 @@ int main(int argc, char *argv[])
     }
 
     QQmlApplicationEngine engine;
+
+    qmlRegisterType<QImage>("QImageType", 1, 0, "QImage");
+    engine.rootContext()->setContextProperty("DBManager", DBManager::getInstance());
+    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     // ========== 核心：注册DBManager为QML单例（修复捕获问题） ==========
     qmlRegisterSingletonType<DBManager>(

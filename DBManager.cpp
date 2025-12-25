@@ -1418,3 +1418,209 @@ QStringList DBManager::getOrderStatusList()
     statusList << "全部" << "已支付" << "已取消" << "已完成" << "已退款";
     return statusList;
 }
+
+// 发布帖子
+bool DBManager::publishPost(
+    const QString& title,
+    const QString& content,
+    int userId,
+    const QByteArray& imgBlob,
+    const QString& imgFormat)
+{
+    if (!isConnected() || title.isEmpty() || content.isEmpty() || userId <= 0) {
+        emit operateResult(false, "标题/正文不能为空");
+        return false;
+    }
+
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        INSERT INTO posts (title, content, user_id, img_blob, img_format)
+        VALUES (:title, :content, :user_id, :img_blob, :img_format)
+    )");
+    query.bindValue(":title", title);
+    query.bindValue(":content", content);
+    query.bindValue(":user_id", userId);
+    query.bindValue(":img_blob", imgBlob); // 空则存NULL
+    query.bindValue(":img_format", imgFormat);
+
+    if (!query.exec()) {
+        emit operateResult(false, "发布失败：" + query.lastError().text());
+        return false;
+    }
+    emit operateResult(true, "发布成功");
+    return true;
+}
+
+// 查询帖子详情
+QVariantMap DBManager::queryPostDetail(int postId, int currentUserId)
+{
+    QVariantMap postMap;
+    if (!isConnected() || postId <= 0) return postMap;
+
+    // 查询帖子基础信息
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT id, title, content, create_time, img_blob, img_format
+        FROM posts WHERE id = :post_id AND status = 'normal'
+    )");
+    query.bindValue(":post_id", postId);
+
+    if (!query.exec() || !query.next()) {
+        qDebug() << "查询帖子失败：" << query.lastError().text();
+        return postMap;
+    }
+
+    // 封装核心字段
+    postMap["id"] = query.value("id").toInt();
+    postMap["title"] = query.value("title").toString();
+    postMap["content"] = query.value("content").toString();
+    postMap["create_time"] = query.value("create_time").toString();
+    postMap["img_blob"] = query.value("img_blob").toByteArray();
+    postMap["img_format"] = query.value("img_format").toString();
+
+    // 查询当前用户的操作状态（是否点赞/喜欢）
+    postMap["is_liked"] = isPostLiked(currentUserId, postId);
+    postMap["is_favorited"] = isPostFavorited(currentUserId, postId);
+
+    return postMap;
+}
+
+// 点赞
+bool DBManager::likePost(int userId, int postId)
+{
+    if (!isConnected() || userId <= 0 || postId <= 0) return false;
+    if (isPostLiked(userId, postId)) {
+        emit operateResult(false, "已点赞");
+        return false;
+    }
+
+    m_db.transaction();
+    // 插入点赞记录
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO user_post_likes (user_id, post_id) VALUES (:user_id, :post_id)");
+    query.bindValue(":user_id", userId);
+    query.bindValue(":post_id", postId);
+
+    if (!query.exec()) {
+        m_db.rollback();
+        emit operateResult(false, "点赞失败：" + query.lastError().text());
+        return false;
+    }
+
+    m_db.commit();
+    emit operateResult(true, "点赞成功");
+    return true;
+}
+
+// 取消点赞
+bool DBManager::cancelLikePost(int userId, int postId)
+{
+    if (!isConnected() || userId <= 0 || postId <= 0) return false;
+    if (!isPostLiked(userId, postId)) {
+        emit operateResult(false, "未点赞");
+        return false;
+    }
+
+    m_db.transaction();
+    // 删除点赞记录
+    QSqlQuery query(m_db);
+    query.prepare("DELETE FROM user_post_likes WHERE user_id = :user_id AND post_id = :post_id");
+    query.bindValue(":user_id", userId);
+    query.bindValue(":post_id", postId);
+
+    if (!query.exec()) {
+        m_db.rollback();
+        emit operateResult(false, "取消点赞失败");
+        return false;
+    }
+
+    m_db.commit();
+    emit operateResult(true, "取消点赞成功");
+    return true;
+}
+
+// 是否点赞
+bool DBManager::isPostLiked(int userId, int postId)
+{
+    if (!isConnected() || userId <= 0 || postId <= 0) return false;
+
+    QSqlQuery query(m_db);
+    query.prepare("SELECT 1 FROM user_post_likes WHERE user_id = :user_id AND post_id = :post_id LIMIT 1");
+    query.bindValue(":user_id", userId);
+    query.bindValue(":post_id", postId);
+
+    return query.exec() && query.next();
+}
+
+// 喜欢
+bool DBManager::favoritePost(int userId, int postId)
+{
+    if (!isConnected() || userId <= 0 || postId <= 0) return false;
+    if (isPostFavorited(userId, postId)) {
+        emit operateResult(false, "已喜欢");
+        return false;
+    }
+
+    m_db.transaction();
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO user_post_favorites (user_id, post_id) VALUES (:user_id, :post_id)");
+    query.bindValue(":user_id", userId);
+    query.bindValue(":post_id", postId);
+
+    if (!query.exec()) {
+        m_db.rollback();
+        emit operateResult(false, "喜欢失败");
+        return false;
+    }
+
+    m_db.commit();
+    emit operateResult(true, "喜欢成功");
+    return true;
+}
+
+// 取消喜欢
+bool DBManager::cancelFavoritePost(int userId, int postId)
+{
+    if (!isConnected() || userId <= 0 || postId <= 0) return false;
+    if (!isPostFavorited(userId, postId)) {
+        emit operateResult(false, "未喜欢");
+        return false;
+    }
+
+    m_db.transaction();
+    QSqlQuery query(m_db);
+    query.prepare("DELETE FROM user_post_favorites WHERE user_id = :user_id AND post_id = :post_id");
+    query.bindValue(":user_id", userId);
+    query.bindValue(":post_id", postId);
+
+    if (!query.exec()) {
+        m_db.rollback();
+        emit operateResult(false, "取消喜欢失败");
+        return false;
+    }
+
+    m_db.commit();
+    emit operateResult(true, "取消喜欢成功");
+    return true;
+}
+
+// 是否喜欢
+bool DBManager::isPostFavorited(int userId, int postId)
+{
+    if (!isConnected() || userId <= 0 || postId <= 0) return false;
+
+    QSqlQuery query(m_db);
+    query.prepare("SELECT 1 FROM user_post_favorites WHERE user_id = :user_id AND post_id = :post_id LIMIT 1");
+    query.bindValue(":user_id", userId);
+    query.bindValue(":post_id", postId);
+
+    return query.exec() && query.next();
+}
+
+// Blob转QImage
+QImage DBManager::blobToImage(const QByteArray& blob, const QString& format)
+{
+    QImage img;
+    img.loadFromData(blob, format.toUtf8().data());
+    return img;
+}
