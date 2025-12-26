@@ -110,7 +110,21 @@ ColumnLayout{
 
     function search()
     {
+        if(search_data.flight_id!=="")
+        {
+            let flight=DBManager.queryCollectedFlightByNum(DBManager.getCurrentUserId(),search_data.flight_id)
+            for(let i=0;i<flight.length;i++)
+            {
+                console.log(flight[i]["Flight_id"]);
+            }
 
+            return ;
+        }
+        let flightList=DBManager.queryCollectedFlightsByCondition(DBManager.getCurrentUserId(),search_data.departure,search_data.destination,search_data.depart_time)
+        for(let j=0;j<flightList.length;j++)
+        {
+            console.log(flightList[j]["Flight_id"]);
+        }
     }
 
 }

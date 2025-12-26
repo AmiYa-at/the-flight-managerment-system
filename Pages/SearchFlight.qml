@@ -110,7 +110,7 @@ ColumnLayout{
             let flight =DBManager.queryFlightByNum(search_data.flight_id)
             for(let i=0;i<flight.length;i++)
             {
-                console.log(flight[i]["flightId"]);
+                console.log(flight[i]["Flight_id"]);
             }
 
             return ;
@@ -124,7 +124,10 @@ ColumnLayout{
         console.log(search_data.destination)
         console.log(search_data.depart_time)
         let flightList=DBManager.queryFlightsByCondition(search_data.departure,search_data.destination,search_data.depart_time)
-
+        for(let j=0;j<flightList.length;j++)
+        {
+            console.log(flightList[j]["Flight_id"]);
+        }
 
     }
 

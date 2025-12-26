@@ -118,7 +118,7 @@ public:
     Q_INVOKABLE bool cancelFavoritePost(int userId, int postId);  // 取消喜欢
     Q_INVOKABLE bool isPostFavorited(int userId, int postId);  // 是否喜欢
 
-    Q_INVOKABLE QImage blobToImage(const QByteArray& blob, const QString& format);  // Blob转QImage
+    Q_INVOKABLE QString blobToImage(const QByteArray& blob, const QString& format);  // Blob转QImage
 
 signals:
     void connectionStateChanged(bool isConnected);  // 数据库连接信号

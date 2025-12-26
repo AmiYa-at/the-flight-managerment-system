@@ -3,6 +3,7 @@
 #include <QRegularExpression>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QUrl>
 
 // 初始化静态成员
 DBManager* DBManager::m_instance = nullptr;
@@ -507,6 +508,11 @@ QVariantList DBManager::queryFlightsByCondition(const QString& departure, const 
     QString sql = "SELECT * FROM flight";
     QList<QString> conditions;
     QVariantMap params; // 存储参数绑定（键：参数名，值：参数值）
+
+    if (!departure.isEmpty()) {
+        conditions.append("Departure = :departure");
+        params[":departure"] = departure;
+    }
 
     // 处理目的地条件（非空则添加）
     if (!destination.isEmpty()) {
@@ -1049,7 +1055,7 @@ QVariantList DBManager::queryCollectedFlightsByCondition(int userId, const QStri
     if (!destination.isEmpty()) {
         conditions.append("f.Destination = :destination");
     }
-    if (!destination.isEmpty()) {
+    if (!departDate.isEmpty()) {
         conditions.append("f.DATE(depart_time) = :departDate");
     }
 
@@ -1059,7 +1065,7 @@ QVariantList DBManager::queryCollectedFlightsByCondition(int userId, const QStri
     }
 
     // 按收藏时间降序排列（最新收藏的在前）
-    sql += " ORDER BY uf.favorite_time DESC";
+    sql += " ORDER BY ucf.create_time DESC";
 
     query.prepare(sql);
 
@@ -1615,20 +1621,27 @@ bool DBManager::publishPostWithPath(
     int userId,
     const QString& imgPath)
 {
+
+    //将路径修改为合法路径
+    QString path=imgPath.mid(8);
+    path = path.replace('/', '\\');
+    path = QUrl::fromPercentEncoding(path.toUtf8());
+
+
     if (!isConnected() || title.isEmpty() || content.isEmpty() || userId <= 0 || imgPath.isEmpty()) {
         emit operateResult(false, "参数错误或数据库未连接");
         return false;
     }
 
     // C++读取图片文件为二进制（带压缩）
-    QByteArray imgBlob = readImageToBlob(imgPath, 80);
+    QByteArray imgBlob = readImageToBlob(path, 80);
     if (imgBlob.isEmpty()) {
         emit operateResult(false, "图片读取失败或不是有效图片");
         return false;
     }
 
     // 获取图片格式（后缀）
-    QString imgFormat = imgPath.split(".").last().toLower();
+    QString imgFormat = path.split(".").last().toLower();
     // 兼容jpg/jpeg
     if (imgFormat == "jpeg") imgFormat = "jpg";
 
@@ -1803,9 +1816,18 @@ bool DBManager::isPostFavorited(int userId, int postId)
 }
 
 // Blob转QImage
-QImage DBManager::blobToImage(const QByteArray& blob, const QString& format)
+QString DBManager::blobToImage(const QByteArray& blob, const QString& format)
 {
-    QImage img;
-    img.loadFromData(blob, format.toUtf8().data());
-    return img;
+    QImage image;
+    image.loadFromData(blob, format.toUtf8());
+
+    // 转换为 base64
+    QByteArray byteArray;
+    QBuffer buffer(&byteArray);
+    buffer.open(QIODevice::WriteOnly);
+    image.save(&buffer, format.toUtf8());
+
+    return QString("data:image/%1;base64,%2")
+        .arg(format.toLower())
+        .arg(QString(byteArray.toBase64()));
 }
