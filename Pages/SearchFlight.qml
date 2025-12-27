@@ -15,7 +15,9 @@ ColumnLayout{
     }
 
     // 航班号结果
-    property var flightList:[]
+    ListModel{
+        id:flightList
+    }
 
     Layout.fillWidth: true
     Layout.fillHeight: true
@@ -105,31 +107,25 @@ ColumnLayout{
     HusDivider{
         Layout.fillWidth: true
     }
-    ScrollView{
+    ListView{
         Layout.fillHeight: true
         Layout.fillWidth: true
-        Column{
-            width: parent.width
-            spacing: 5
-            Repeater{
-                model: flightList
+        model: flightList
 
-                FlightInformationCard{
-                    required property var modelData
-                    width: parent.width
-                    height: 150
-                    card_data: {
-                        "flight_id":modelData.Flight_id,
-                        "departure":modelData.Departure,
-                        "destination":modelData.Destination,
-                        "depart_time":modelData.depart_time,
-                        "arrive_time":modelData.arrive_time,
-                        "price":modelData.price,
-                        "total_seats":modelData.total_seats,
-                        "remain_seats":modelData.remain_seats,
-                        "status":modelData.status
-                    }
-                }
+        delegate: FlightInformationCard{
+            required property var model_data
+            width: parent.width
+            height: 150
+            card_data: {
+                "flight_id":model_data.Flight_id,
+                "departure":model_data.Departure,
+                "destination":model_data.Destination,
+                "depart_time":model_data.depart_time,
+                "arrive_time":model_data.arrive_time,
+                "price":model_data.price,
+                "total_seats":model_data.total_seats,
+                "remain_seats":model_data.remain_seats,
+                "status":model_data.status
             }
         }
     }
@@ -154,14 +150,16 @@ ColumnLayout{
         // var departureText=departure.displayText==="起始地"?"":departure.displayText
         // var destinationText=destination.displayText==="目的地"?"":destination.displayText
 
-        console.log("here")
-        console.log(search_data.departure)
-        console.log(search_data.destination)
-        console.log(search_data.depart_time)
-        flightList=DBManager.queryFlightsByCondition(search_data.departure,search_data.destination,search_data.depart_time)
-        for(let j=0;j<flightList.length;j++)
+        console.log("here");
+        console.log(search_data.departure);
+        console.log(search_data.destination);
+        console.log(search_data.depart_time);
+        let flights=DBManager.queryFlightsByCondition(search_data.departure,search_data.destination,search_data.depart_time);
+        flightList.clear();
+        for(let j=0;j<flights.length;j++)
         {
-            console.log(flightList[j]["Flight_id"]);
+            console.log(flights[j]["Flight_id"]);
+            flightList.append(flights[j]);
         }
 
     }
