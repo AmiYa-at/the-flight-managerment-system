@@ -147,9 +147,6 @@ HusRectangle{
                 HoverHandler{
                     id:hoverHandler
                     target: parent
-                    hovered: {
-
-                    }
                 }
 
                 TapHandler{
@@ -174,6 +171,11 @@ HusRectangle{
                 type: HusButton.Type_Primary
                 Layout.preferredWidth: 100
                 onHoveredChanged: text = hovered ? qsTr("购买") : qsTr(card_data.price+"元")
+
+                TapHandler{
+                    target: parent
+                    onTapped: DBManager.
+                }
             }
         }
     }

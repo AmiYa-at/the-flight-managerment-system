@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import HuskarUI.Basic
+import "../Components"
 
 ColumnLayout{
     Layout.fillWidth: true
@@ -14,116 +15,56 @@ ColumnLayout{
         "depart_time":""
     }
 
-    ColumnLayout {
+    property var initModel: [
+        {value:"",label:qsTr("起始地")},
+        {value:"北京",label:qsTr("北京")},
+        {value:"上海",label:qsTr("上海")}
+    ]
+
+    // 航班号结果
+    ListModel{
+        id:flightList
+    }
+
+    ListView{
+        Layout.fillHeight: true
         Layout.fillWidth: true
-        spacing: 30
+        Layout.topMargin: 30
+        spacing: 5
+        model: flightList
 
-        RowLayout {
-            id: searchRow
-            Layout.preferredHeight: 30
-            Layout.maximumHeight: 30
-            Layout.alignment: Qt.AlignHCenter
-            Layout.fillWidth: true
-            Layout.topMargin: 30
-            spacing: 30
-
-            HusInput {
-                id: search_my_flight_input
-                Layout.preferredWidth: 300
-                Layout.maximumWidth: 300
-                Layout.fillHeight: true
-                radiusBg.all: 5
-                placeholderText: "输入航班号"
-                onTextChanged: search_data.flight_id=text
-            }
-
-            HusIconButton {
-                id: search_my_flight_button
-                Layout.preferredWidth: 75
-                Layout.maximumWidth: 75
-                Layout.fillHeight: true
-                radiusBg.all: 5
-                iconSource: HusIcon.SearchOutlined
-                text: qsTr("搜索")
-                onClicked: search()
-            }
-        }
-
-        // 第二个RowLayout
-        RowLayout {
-            id: rectangleRow
-            Layout.preferredHeight: 30
-            Layout.maximumHeight: 30
-            Layout.fillWidth: true
-
-            HusSelect{
-                Layout.preferredWidth: 180
-                Layout.maximumHeight: 180
-                Layout.fillHeight: true
-                clearEnabled: false
-                model: [
-                    {value:"",label:qsTr("起始地")},
-                    {value:"北京",label:qsTr("北京")},
-                    {value:"上海",label:qsTr("上海")}
-                ]
-                onActivated: search_data.departure=currentValue
-            }
-            HusSelect{
-                Layout.preferredWidth: 180
-                Layout.maximumWidth: 180
-                Layout.fillHeight: true
-                clearEnabled: false
-                model:[
-                    {value:"",label:qsTr("目的地")},
-                    {value:"北京",label:qsTr("北京")},
-                    {value:"上海",label:qsTr("上海")}
-                ]
-                onActivated: search_data.destination=currentValue
-            }
-            HusDateTimePicker{
-                Layout.preferredWidth: 280
-                Layout.maximumWidth: 280
-                Layout.fillHeight: true
-                datePickerMode: HusDateTimePicker.Mode_Day
-                showTime: false
-                placeholderText: qsTr("请选择始发时间")
-                format: qsTr("yyyy-MM-dd")
-                onTextChanged: search_data.depart_time=text
+        delegate: MyFavouriteFlight{
+            required property var modelData
+            height: 150
+            card_data: {
+                "flight_id":modelData.Flight_id,
+                "departure":modelData.Departure,
+                "destination":modelData.Destination,
+                "depart_time":modelData.depart_time,
+                "arrive_time":modelData.arrive_time,
+                "price":modelData.price,
+                "total_seats":modelData.total_seats,
+                "remain_seats":modelData.remain_seats,
+                "status":modelData.status
             }
         }
     }
-    HusDivider{
-        Layout.fillWidth: true
-    }
-    Loader{
-        id:flight_information_card
-        Layout.fillWidth: true
-        Layout.preferredHeight: 150
-        Layout.maximumHeight: 150
-        source: "../Components/FlightInformationCard.qml"
-    }
+
 
     Item{
         Layout.fillHeight: true
         Layout.fillWidth: true
     }
 
-    function search()
-    {
-        if(search_data.flight_id!=="")
-        {
-            let flight=DBManager.queryCollectedFlightByNum(DBManager.getCurrentUserId(),search_data.flight_id)
-            for(let i=0;i<flight.length;i++)
-            {
-                console.log(flight[i]["Flight_id"]);
-            }
+    Component.onCompleted: {
+        get_favourite_flights();
+    }
 
-            return ;
-        }
-        let flightList=DBManager.queryCollectedFlightsByCondition(DBManager.getCurrentUserId(),search_data.departure,search_data.destination,search_data.depart_time)
-        for(let j=0;j<flightList.length;j++)
-        {
-            console.log(flightList[j]["Flight_id"]);
+    function get_favourite_flights(){
+        var flights = DBManager.queryCollectedFlights();
+        flightList.clear();
+        for(let i=0;i<flights.length;++i){
+            flightList.append(flights[i]);
         }
     }
 

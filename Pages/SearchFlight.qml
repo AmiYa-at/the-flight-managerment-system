@@ -14,6 +14,15 @@ ColumnLayout{
         "depart_time":""
     }
 
+    property var regionsList: [
+        {value:"",label:qsTr("起始地")},
+        {value:"北京",label:qsTr("北京")},
+        {value:"上海",label:qsTr("上海")},
+        {value:"广州",label:qsTr("广州")},
+        {value:"长沙",label:qsTr("长沙")},
+        {value:"深圳",label:qsTr("深圳")}
+    ]
+
     // 航班号结果
     ListModel{
         id:flightList
@@ -71,11 +80,7 @@ ColumnLayout{
                 Layout.maximumHeight: 180
                 Layout.fillHeight: true
                 clearEnabled: false
-                model: [
-                    {value:"",label:qsTr("起始地")},
-                    {value:"北京",label:qsTr("北京")},
-                    {value:"上海",label:qsTr("上海")}
-                ]
+                model: regionsList
                 onActivated: search_data.departure=currentValue
             }
             HusSelect{
@@ -84,11 +89,7 @@ ColumnLayout{
                 Layout.maximumWidth: 180
                 Layout.fillHeight: true
                 clearEnabled: false
-                model:[
-                    {value:"",label:qsTr("目的地")},
-                    {value:"北京",label:qsTr("北京")},
-                    {value:"上海",label:qsTr("上海")}
-                ]
+                model: regionsList
                 onActivated: search_data.destination=currentValue
             }
             HusDateTimePicker{
@@ -149,13 +150,6 @@ ColumnLayout{
             return ;
         }
 
-        // var departureText=departure.displayText==="起始地"?"":departure.displayText
-        // var destinationText=destination.displayText==="目的地"?"":destination.displayText
-
-        console.log("here");
-        console.log(search_data.departure);
-        console.log(search_data.destination);
-        console.log(search_data.depart_time);
         let flights=DBManager.queryFlightsByCondition(search_data.departure,search_data.destination,search_data.depart_time);
         flightList.clear();
         for(let j=0;j<flights.length;j++)
