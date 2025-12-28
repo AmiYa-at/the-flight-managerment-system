@@ -1,9 +1,11 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import HuskarUI.Basic
+import QtQuick.Controls
+import QtQuick.Effects
+import QtQml
 import com.flight.db 1.0
-
+import QtQuick.Dialogs
 ColumnLayout{
     Layout.fillWidth: true
     Layout.fillHeight: true
@@ -23,6 +25,7 @@ ColumnLayout{
         TapHandler{
             target:parent
             onTapped: {
+                fileDialog.open()
                 console.log("haji")
             }
         }
@@ -30,7 +33,7 @@ ColumnLayout{
             id:userImage
             size:100
             anchors.centerIn: parent
-            //imageSource:
+            imageSource:DBManager.blobToImage(DBManager.getUserAvatarBlob(DBManager.getCurrentUserId()),DBManager.getUserAvatarFormat(DBManager.getCurrentUserId()))
         }
     }
 
@@ -66,6 +69,17 @@ ColumnLayout{
             width:200
             text:qsTr(DBManager.getCurrentUserEmail())
             placeholderText: "请输入邮箱地址"
+        }
+    }
+
+    //上传头像照片
+    FileDialog {
+        id: fileDialog
+        title: "选择图片文件"
+        nameFilters: ["图片文件 (*.jpg *.png)"]
+        onAccepted: {
+            DBManager.uploadUserAvatar(DBManager.getCurrentUserId(),selectedFile)
+            userImage.imageSource=DBManager.blobToImage(DBManager.getUserAvatarBlob(DBManager.getCurrentUserId()),DBManager.getUserAvatarFormat(DBManager.getCurrentUserId()))
         }
     }
 

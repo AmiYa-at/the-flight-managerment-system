@@ -353,21 +353,26 @@ void DBManager::userLogout()
     emit operateResult(true, "登出成功！");
 }
 
-// 【核心】上传头像：传入用户ID+图片路径，自动处理所有逻辑（推荐调用这个）
+// 上传头像：传入用户ID+图片路径，自动处理所有逻辑（推荐调用这个）
 bool DBManager::uploadUserAvatar(int userId, const QString& imgPath, int quality)
 {
+    //将路径修改为合法路径
+    QString path=imgPath.mid(8);
+    path = path.replace('/', '\\');
+    path = QUrl::fromPercentEncoding(path.toUtf8());
+
     if (!isConnected() || userId <=0 || imgPath.isEmpty()) {
         emit operateResult(false, "参数错误/数据库未连接");
         return false;
     }
-    // 复用你之前的图片读取函数，自动解析file:///路径+转二进制+压缩
-    QByteArray imgBlob = readImageToBlob(imgPath, quality);
+
+    QByteArray imgBlob = readImageToBlob(path, quality);
     if (imgBlob.isEmpty()) {
         emit operateResult(false, "头像图片读取失败");
         return false;
     }
     // 获取图片格式
-    QString imgFormat = imgPath.split(".").last().toLower();
+    QString imgFormat = path.split(".").last().toLower();
     if(imgFormat == "jpeg") imgFormat = "jpg";
     // 调用二进制上传函数
     return uploadUserAvatarByBlob(userId, imgBlob, imgFormat);

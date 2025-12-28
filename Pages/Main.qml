@@ -69,7 +69,7 @@ HusWindow{
                     //头像
                     HusAvatar{
                         size: 80
-                        imageSource: ''
+                        imageSource: DBManager.blobToImage(DBManager.getUserAvatarBlob(DBManager.getCurrentUserId()),DBManager.getUserAvatarFormat(DBManager.getCurrentUserId()))
                         imageMipmap: true
                     }
                     //名字
