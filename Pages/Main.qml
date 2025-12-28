@@ -149,6 +149,10 @@ HusWindow{
                         {
                             right_page.source="TravelShare.qml"
                         }
+                        if(key==="my_flight")
+                        {
+                            right_page.source="MyFlight.qml"
+                        }
 
                         console.log("jimi");
                     }
