@@ -61,7 +61,7 @@ ColumnLayout{
     }
 
     function get_favourite_flights(){
-        var flights = DBManager.queryCollectedFlights();
+        var flights = DBManager.queryCollectedFlights(DBManager.getCurrentUserId());
         flightList.clear();
         for(let i=0;i<flights.length;++i){
             flightList.append(flights[i]);

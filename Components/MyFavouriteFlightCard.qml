@@ -151,9 +151,7 @@ HusRectangle{
                 HoverHandler{
                     id:hoverHandler
                     target: parent
-                    hovered: {
 
-                    }
                 }
 
                 TapHandler{

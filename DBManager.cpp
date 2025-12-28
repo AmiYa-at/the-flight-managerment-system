@@ -981,7 +981,7 @@ bool DBManager::deleteFlight(const QString &Flight_id)
 }
 
 // 收藏航班
-bool DBManager::collectFlight(int userId, const QString &flightId)
+int DBManager::collectFlight(int userId, const QString &flightId)
 {
     QMutexLocker locker(&m_mutex);
 
@@ -1224,7 +1224,7 @@ QVariantList DBManager::queryCollectedFlightsByCondition(int userId,
 // 判断用户是否已收藏某航班
 bool DBManager::isFlightCollected(int userId, const QString &flightId)
 {
-    QMutexLocker locker(&m_mutex);
+    // QMutexLocker locker(&m_mutex);
 
     if (!m_db.isOpen()) {
         emit operateResult(false, "判断失败：数据库未连接！");
