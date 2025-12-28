@@ -53,6 +53,13 @@ HusWindow{
                         id:hoverHandler
                         target: parent
                     }
+                    TapHandler{
+                        target:parent
+                        onTapped: {
+                            right_page.source="UserData.qml"
+                            console.log("haji")
+                        }
+                    }
                 }
                 RowLayout{
                     anchors.left: parent.left

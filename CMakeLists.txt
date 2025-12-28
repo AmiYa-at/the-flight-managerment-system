@@ -52,6 +52,7 @@ qt_add_qml_module(appthe_flight_managerment_system
     QML_FILES Pages/RootContainer.qml
     QML_FILES Pages/TravelShare.qml
     QML_FILES Pages/MyFlight.qml
+    QML_FILES Pages/UserData.qml
 
 
 )
