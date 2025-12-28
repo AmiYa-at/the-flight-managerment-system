@@ -137,24 +137,19 @@ HusRectangle{
                 }
             }
             //修改按钮
-            HusIconText{
+            HusButton{
                 Layout.fillHeight: true
                 Layout.preferredWidth: 100
                 text:"修改"
-                iconSize: parent.height
-                colorIcon: "yellow"
+
 
                 HoverHandler{
                     id:hoverHandler
                     target: parent
                 }
 
-                TapHandler{
-                    id:tapHandler
-                    target: parent
-                    onTapped: {
-
-                    }
+                onClicked: {
+                    modifyDialog.open()
                 }
 
 
