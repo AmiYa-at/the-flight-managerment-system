@@ -300,7 +300,7 @@ int DBManager::userLogin(const QString &User_name, const QString &Password)
 
     // 3. 查询用户信息
     QSqlQuery query(m_db);
-    query.prepare("SELECT Uid, Email, Password FROM user_info WHERE User_name = :User_name");
+    query.prepare("SELECT Uid, Email, Password, phone, idcard FROM user_info WHERE User_name = :User_name");
     query.bindValue(":User_name", User_name);
 
     if (!query.exec()) {
@@ -329,6 +329,8 @@ int DBManager::userLogin(const QString &User_name, const QString &Password)
     m_currentUserId = query.value("Uid").toInt();
     m_currentUserName = User_name;
     m_currentUserEmail = query.value("Email").toString();
+    m_currentUserPhone = query.value("phone").toString();
+    m_currentUserIdCard = query.value("idcard").toString();
 
     qInfo() << "[DB] 用户 " << User_name << " 登录成功！";
     emit userLoginStateChanged(true);
@@ -2049,8 +2051,7 @@ bool DBManager::updateUserName(const QString& newUserName) {
         QString oldUserName = m_currentUserName;
         m_currentUserName = newUserName;
         qDebug() << "用户" << m_currentUserId << "用户名从" << oldUserName << "更新为" << newUserName;
-        emit userNameUpdated(true, "用户名更新成功");
-        emit userInfoChanged();
+        emit operateResult(true, "用户名更新成功");
         return true;
 
     } catch (const std::exception& e) {

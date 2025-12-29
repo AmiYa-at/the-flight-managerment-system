@@ -23,6 +23,7 @@ ColumnLayout{
     ListView{
         Layout.fillHeight: true
         Layout.fillWidth: true
+        clip: true
         Layout.topMargin: 30
         spacing: 5
         model: flightList

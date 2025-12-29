@@ -67,14 +67,16 @@ HusWindow{
                     spacing: 15
                     //头像
                     HusAvatar{
+                        id:avatar
                         size: 80
                         imageSource: DBManager.blobToImage(DBManager.getUserAvatarBlob(DBManager.getCurrentUserId()),DBManager.getUserAvatarFormat(DBManager.getCurrentUserId()))
                         imageMipmap: true
                     }
                     //名字
                     HusCopyableText{
+                        id:user_name
                         textFormat: Text.RichText
-                        text: qsTr(DBManager.getCurrentUserName()) //此处需要适配数据库
+                        text: qsTr(DBManager.getCurrentUserName())
                     }
                 }
             }
@@ -177,6 +179,19 @@ HusWindow{
                         right_page.source = "";
                         right_page.source = old_source;
                     });
+                }
+            }
+        }
+
+        Connections{
+            target: DBManager
+
+            function onOperateResult(success,message){
+                if(message.includes("头像上传成功") && success){
+                    avatar.imageSource = DBManager.blobToImage(DBManager.getUserAvatarBlob(DBManager.getCurrentUserId()),DBManager.getUserAvatarFormat(DBManager.getCurrentUserId()))
+                }
+                if(message.includes("用户名更新成功") && success){
+                    user_name.text = qsTr(DBManager.getCurrentUserName())
                 }
             }
         }

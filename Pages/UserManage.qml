@@ -18,6 +18,7 @@ ColumnLayout{
     ListView{
         Layout.fillHeight: true
         Layout.fillWidth: true
+        clip: true
         spacing: 5
         model: userList
 

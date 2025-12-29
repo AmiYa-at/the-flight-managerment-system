@@ -21,7 +21,7 @@ ColumnLayout{
     // 刷新页面计时器
     Timer{
         id:reload_timer
-        interval: 100
+        interval: 1000
         onTriggered: {
             reload_request();
             console.log("子页面重新加载");
@@ -55,6 +55,7 @@ ColumnLayout{
         autoSize: true
         minRows: 10
         maxRows: 10
+        maxLength: 490
         placeholderText: qsTr("请输入正文")
         textArea.onTextChanged: {
             share_data.content = text

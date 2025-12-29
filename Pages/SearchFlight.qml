@@ -111,6 +111,7 @@ ColumnLayout{
     ListView{
         Layout.fillHeight: true
         Layout.fillWidth: true
+        clip: true
         spacing: 5
         model: flightList
 
@@ -129,11 +130,6 @@ ColumnLayout{
                 "status":modelData.status
             }
         }
-    }
-
-    Item{
-        Layout.fillHeight: true
-        Layout.fillWidth: true
     }
 
     function searchFlight(){

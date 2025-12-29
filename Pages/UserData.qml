@@ -11,6 +11,13 @@ ColumnLayout{
     Layout.fillHeight: true
     spacing: 10
 
+    HusMessage{
+        id:send_message
+        z:999
+        width:parent.width
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+    }
+
     HusRectangle{
         id:imageContainer
         height:110
@@ -134,6 +141,16 @@ ColumnLayout{
         Layout.fillWidth: true
     }
 
+    Connections{
+        target: DBManager
+
+        function onUserNameUpdated(success,message){
+            if(!success && message.includes("更新用户名失败")){
+                send_message.error("用户名已存在");
+                usernameInput.text = DBManager.getCurrentUserName();
+            }
+        }
+    }
 
 
 
@@ -152,7 +169,8 @@ ColumnLayout{
     function saveData()
     {
         //非法检测（没写
-
+        DBManager.updateUserName(usernameInput.text)
+        DBManager.updateUserEmail(emailInput.text)
         DBManager.updateUserIdCard(idcardInput.text)
         DBManager.updateUserPhone(phoneInput.text)
     }

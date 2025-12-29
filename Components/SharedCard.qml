@@ -20,8 +20,9 @@ Item {
         anchors.centerIn: parent
         title: qsTr(card_data.title)
         coverSource: card_data.image_url
+        coverFillMode: Image.PreserveAspectFit
         bodyDescription: qsTr(card_data.content)
-        colorBodyDescription: "#000000"
+        colorBodyDescription: HusTheme.darkMode === HusTheme.Dark? "#FFFFFF" : "#000000"
         actionDelegate: Item {
             height: 470
             width: parent.width
