@@ -49,7 +49,7 @@ ColumnLayout{
         HusInput{
             id:usernameInput
             width:200
-            text:qsTr(DBManager.getCurrentUserName())
+            text:DBManager.getCurrentUserName()
             placeholderText: "请输入用户名"
 
         }
@@ -67,7 +67,7 @@ ColumnLayout{
         HusInput{
             id:emailInput
             width:200
-            text:qsTr(DBManager.getCurrentUserEmail())
+            text:DBManager.getCurrentUserEmail()
             placeholderText: "请输入邮箱地址"
         }
     }

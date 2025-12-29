@@ -907,12 +907,17 @@ bool DBManager::updateFlightSeats(const QString &Flight_id, int newRemainSeats)
 }
 
 // 更新航班状态
-bool DBManager::updateFlightStatus(const QString &Flight_id, int newststus)
+bool DBManager::updateFlightStatus(const QString &Flight_id, int newstatus)
 {
     QMutexLocker locker(&m_mutex);
 
     if (!m_db.isOpen()) {
         emit operateResult(false, "更新失败：数据库未连接！");
+        return false;
+    }
+
+    if(newstatus != 0 && newstatus != 1 && newstatus != 2){
+        emit operateResult(false, "更新失败：错误的状态！");
         return false;
     }
 
@@ -926,13 +931,13 @@ bool DBManager::updateFlightStatus(const QString &Flight_id, int newststus)
         return false;
     }
 
-    query.bindValue(":newststus", newststus);
+    query.bindValue(":newstatus", newstatus);
     query.bindValue(":Flight_id", Flight_id);
     bool success = query.exec();
 
     if (success && query.numRowsAffected() > 0) {
         emit operateResult(true,
-                           "航班 " + Flight_id + " 状态更新为 " + QString::number(newststus)
+                           "航班 " + Flight_id + " 状态更新为 " + QString::number(newstatus)
                                + "！ ");
     } else if (success && query.numRowsAffected() == 0) {
         emit operateResult(false, "更新失败：未找到航班 " + Flight_id + "！");
@@ -1812,7 +1817,9 @@ int DBManager::getLatestPostId()
 // 查询帖子详情
 QVariantMap DBManager::queryPostDetail(int postId, int currentUserId)
 {
-    QVariantMap postMap;
+    QMutexLocker locker(&m_mutex);
+
+    QVariantMap postMap = QVariantMap();
     if (!isConnected() || postId <= 0)
         return postMap;
 
@@ -1828,6 +1835,8 @@ QVariantMap DBManager::queryPostDetail(int postId, int currentUserId)
         qDebug() << "查询帖子失败：" << query.lastError().text();
         return postMap;
     }
+
+    qDebug()<<"查询帖子成功";
 
     // 封装核心字段
     postMap["id"] = query.value("id").toInt();
@@ -2056,7 +2065,7 @@ bool DBManager::updateUserIdCard(const QString& idCard)
         return false;
     }
 }
-int DBManager::createOrder(int userId, const QString &flightId, const QString &status)
+int DBManager::createOrder(int userId, const QString &flightId, const int status)
 {
     if (!m_db.isOpen()) {
         qCritical() << "数据库未连接";

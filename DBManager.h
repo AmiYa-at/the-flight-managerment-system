@@ -148,7 +148,7 @@ public:
     Q_INVOKABLE int createOrder(  // 创建订单
         int userId,
         const QString &flightId,
-        const QString &status = "待支付"  // 默认状态
+        const int status = 0  // 默认状态
         );
 signals:
     void connectionStateChanged(bool isConnected);        // 数据库连接信号

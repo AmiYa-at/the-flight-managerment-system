@@ -79,17 +79,17 @@ HusWindow{
                     }
                     initModel: [
                     {
-                        key:"flightManager",
+                        key:"flightManage",
                         label:qsTr("修改航班信息"),
                         iconSource:HusIcon.GlobalOutlined
                     },
                     {
-                        key:"orderManager",
+                        key:"orderManage",
                         label:qsTr("修改订单信息"),
                         iconSource:HusIcon.StarOutlined
                     },
                     {
-                        key:"shareManager",
+                        key:"shareManage",
                         label:qsTr("修改分享信息"),
                         iconSource:HusIcon.StarOutlined
                     },
@@ -110,8 +110,8 @@ HusWindow{
 
                     ]
                     onClickMenu:function(deep,key,key_path,data){
-                        if(key==="my_favourite_flight"){
-                            right_page.source="MyFavouriteFlight.qml"
+                        if(key==="flightManage"){
+                            right_page.source="FlightManage.qml"
                         }
                         if(key==="about_us"){
                             right_page.source="AboutUs.qml"
@@ -121,6 +121,10 @@ HusWindow{
                         }
                         if(key==="search_flight"){
                             right_page.source="SearchFlight.qml"
+                        }
+                        if(key==="my_settings")
+                        {
+                            right_page.source="Settings.qml"
                         }
 
                         console.log("jimi");

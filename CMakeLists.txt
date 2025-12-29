@@ -29,7 +29,7 @@ qt_add_executable(appthe_flight_managerment_system
 qt_add_qml_module(appthe_flight_managerment_system
     URI the_flight_managerment_system
     VERSION 1.0
-    
+
     QML_FILES
     Pages/Login.qml
     Pages/Main.qml
@@ -41,7 +41,7 @@ qt_add_qml_module(appthe_flight_managerment_system
 
 
     RESOURCES images.qrc
-    SOURCES 
+    SOURCES
     DBManager.cpp
     DBManager.h
     QML_FILES Pages/AdminChangeFlightInformation.qml
@@ -54,6 +54,8 @@ qt_add_qml_module(appthe_flight_managerment_system
     QML_FILES Pages/MyFlight.qml
     QML_FILES Components/MyFavouriteFlightCard.qml
     QML_FILES Pages/UserData.qml
+    QML_FILES Pages/FlightManage.qml
+    QML_FILES Components/FlightManageCard.qml
 
 
 )

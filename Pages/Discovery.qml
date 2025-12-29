@@ -5,8 +5,8 @@ import com.flight.db 1.0
 
 ColumnLayout{
 
-    property var post_id:Number
-    property var last_id:Number
+    property var post_id:-1
+    property var last_id:-1
 
     Layout.fillHeight: true
     Layout.fillWidth: true
@@ -42,8 +42,10 @@ ColumnLayout{
             iconSource: HusIcon.LeftOutlined
             iconSize: 10
             onClicked: {
-                if(last_id){
+                if(last_id!==-1){
                     let post = DBManager.queryPostDetail(last_id,DBManager.getCurrentUserId());
+                    last_id = post.id;
+                    post_id = last_id;
                     if(shared_card.item){
                         shared_card.item.card_data={
                             "id":post.id,
@@ -52,6 +54,7 @@ ColumnLayout{
                             "image_url":DBManager.blobToImage(post.img_blob,post.img_format)
                         }
                     }
+
                 }
             }
         }
@@ -61,10 +64,17 @@ ColumnLayout{
             iconSource: HusIcon.RightOutlined
             iconSize: 10
             onClicked: {
-                let post = [];
+                if( post_id===0){
+                    console.log(post_id);
+                    return;
+                }
+
+                let post;
                 let index = post_id-1;
-                while(post.length==0){
+                while(typeof post!=='object'||(typeof post==='object'&&(Object.keys(post).length===0))){
                     if(index===0){
+                        post_id=0;
+                        console.log(post_id);
                         return;
                     }
 
