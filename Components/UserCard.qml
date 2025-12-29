@@ -20,41 +20,49 @@ HusRectangle{
 
 
     RowLayout{
-        fillHeight: true
-        fillWidth: true
-
+        //fillHeight: true
+        //fillWidth: true
+        width:parent.width
+        height:parent.height
+        spacing:10
         HusText{
             id:uidText
             width:30
-            text:""
+            text:"Uid："+user_data.uid
         }
 
         HusText{
             id:usernameText
             width:30
-            text:""
+            text:"用户名："+user_data.username
         }
 
         HusText{
             id:emailText
             width:50
-            text:""
+            text:"邮箱地址："+user_data.email
         }
 
         HusText{
             id:phoneText
             width:50
+            text:"手机号码："+user_data.phone
         }
 
         HusText{
             id:idcardText
             width:50
-            text:""
+            text:"身份证号码："+user_data.idcard
         }
 
         HusButton{
             id:deleteButton
             width:20
+            text:"删除"
+            colorBg: "red"
+            onClicked: {
+                DBManager.deleteUser(user_data.uid)
+            }
         }
     }
 }
