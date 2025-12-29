@@ -59,6 +59,7 @@ qt_add_qml_module(appthe_flight_managerment_system
     QML_FILES Components/MyFlightCard.qml
     QML_FILES Pages/UserManage.qml
     QML_FILES Components/UserCard.qml
+    QML_FILES Pages/OrderManage.qml
 
 
 )

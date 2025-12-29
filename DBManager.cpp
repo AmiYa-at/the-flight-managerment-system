@@ -1932,7 +1932,7 @@ bool DBManager::updateUserIdCard(const QString& idCard)
         return false;
     }
 }
-bool DBManager::createOrder(int userId, const QString &flightId, const QString& passengerName, const QString& passergerIdcard)
+bool DBManager::createOrder(int userId, const QString &flightId, const QString& passengerName, const QString& passengerIdcard)
 {
     if (!m_db.isOpen()) {
         qCritical() << "数据库未连接";
@@ -1958,11 +1958,12 @@ bool DBManager::createOrder(int userId, const QString &flightId, const QString& 
 
     // 2. 创建订单
     QSqlQuery orderQuery(m_db);
-    orderQuery.prepare("INSERT INTO `order` (user_id, flight_id, passenger_name, passerger_idcard) VALUES (?, ?, ?)");
-    orderQuery.addBindValue(userId);
-    orderQuery.addBindValue(flightId);
-    orderQuery.addBindValue(passengerName);
-    orderQuery.addBindValue(passergerIdcard);
+    orderQuery.prepare("INSERT INTO order (user_id, flight_id, passenger_name, passenger_idcard) VALUES (:userId, :flightId, :passengerName, :passengerIdcard) TURNING order_id");
+    orderQuery.bindValue(":userId", userId);
+    orderQuery.bindValue(":flightId", flightId);
+    orderQuery.bindValue(":passengerName", passengerName);
+    orderQuery.bindValue(":passengerIdcard", passengerIdcard);
+
 
     if (!orderQuery.exec()) {
         qCritical() << "创建订单失败：" << orderQuery.lastError().text();
@@ -1970,7 +1971,7 @@ bool DBManager::createOrder(int userId, const QString &flightId, const QString& 
         return false;
     }
 
-    QString orderId = orderQuery.lastInsertId().toString();
+    QString orderId = orderQuery.value("order_id").toString();
 
     // 3. 更新航班剩余座位数
     QSqlQuery updateFlightQuery(m_db);

@@ -119,8 +119,8 @@ HusWindow{
                         if(key==="userManage"){
                             right_page.source="UserManage.qml"
                         }
-                        if(key==="search_flight"){
-                            right_page.source="SearchFlight.qml"
+                        if(key==="orderManage"){
+                            right_page.source="OrderManage.qml"
                         }
                         if(key==="my_settings")
                         {

@@ -180,7 +180,7 @@ HusRectangle{
 
                 TapHandler{
                     target: parent
-                    onTapped:DBManager.createOrder(DBManager.getCurrentUserId(),card_data.flight_id,1)
+                    onTapped:DBManager.createOrder(DBManager.getCurrentUserId(),card_data.flight_id,"114514","1919810")
                 }
             }
         }
