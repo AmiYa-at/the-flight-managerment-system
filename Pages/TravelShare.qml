@@ -55,7 +55,7 @@ ColumnLayout{
         autoSize: true
         minRows: 10
         maxRows: 10
-        maxLength: 490
+        maxLength: 550
         placeholderText: qsTr("请输入正文")
         textArea.onTextChanged: {
             share_data.content = text

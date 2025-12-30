@@ -64,11 +64,11 @@ ColumnLayout{
 
         function onOperateResult(success,message){
             if(message.includes("删除订单成功") && success){
-                order_message.success("取消收藏成功!");
+                order_message.success("取消订单成功!");
                 get_order_flights();
             }
             else{
-                order_message.error(message);
+                order_message.info(message);
             }
         }
     }

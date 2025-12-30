@@ -3,6 +3,9 @@
         <file>login.png</file>
         <file>register.png</file>
         <file>avatar_Amiya1145.jpg</file>
+        <file>yz.png</file>
+        <file>gyt.jpg</file>
+        <file>wwl.jpg</file>
     </qresource>
     <qresource prefix="/">
         <file>GlobalSettings.qml</file>

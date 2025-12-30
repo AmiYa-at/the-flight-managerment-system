@@ -144,10 +144,55 @@ ColumnLayout{
     Connections{
         target: DBManager
 
-        function onUserNameUpdated(success,message){
+        function onOperateResult(success,message){
             if(!success && message.includes("更新用户名失败")){
                 send_message.error("用户名已存在");
                 usernameInput.text = DBManager.getCurrentUserName();
+            }
+            else if(!success && message.includes("用户名不能为空")){
+                send_message.error("用户名不能为空");
+                usernameInput.text = DBManager.getCurrentUserName();
+            }
+            else if(success && message.includes("用户名更新成功")){
+                send_message.success("用户名更新成功");
+                usernameInput.text = DBManager.getCurrentUserName();
+            }
+        }
+
+        function onUserEmailUpdated(success,message){
+            if(!success && message.includes("更改失败：邮箱格式错误！")){
+                send_message.error("邮箱格式错误");
+                emailInput.text = DBManager.getCurrentUserEmail();
+            }
+            else if(!success && message.includes("邮箱不能为空")){
+                send_message.error("邮箱不能为空");
+                emailInput.text = DBManager.getCurrentUserEmail();
+            }
+            else if(success && message.includes("邮箱更新成功")){
+                send_message.info("邮箱更新成功");
+                emailInput.text = DBManager.getCurrentUserEmail();
+            }
+        }
+
+        function onUserPhoneUpdated(success,message){
+            if(!success && message.includes("手机号不能出现非数字")){
+                send_message.error("手机号不能出现非数字");
+                phoneInput.text = DBManager.getCurrentUserPhone();
+            }
+            else if(success && message.includes("手机号更新成功")){
+                send_message.info("手机号更新成功");
+                phoneInput.text = DBManager.getCurrentUserPhone();
+            }
+        }
+
+        function onUserIdCardUpdated(success,message){
+            if(!success && message.includes("身份证号非法")){
+                send_message.error("身份证号非法");
+                idcardInput.text = DBManager.getCurrentUserIdCard();
+            }
+            else if(success && message.includes("身份证号更新成功")){
+                send_message.info("身份证号更新成功");
+                idcardInput.text = DBManager.getCurrentUserIdCard();
             }
         }
     }
@@ -168,9 +213,26 @@ ColumnLayout{
     //保存上传信息
     function saveData()
     {
-        //非法检测（没写
-        DBManager.updateUserName(usernameInput.text)
-        DBManager.updateUserEmail(emailInput.text)
+        //非法检测（写了
+
+        if(usernameInput.text==="")
+        {
+            send_message.error("用户名不能为空！");
+            return ;
+        }
+        else{
+            DBManager.updateUserName(usernameInput.text)
+        }
+
+        if(emailInput.text==="")
+        {
+            send_message.error("邮箱不能为空！");
+            return ;
+        }
+        else{
+            DBManager.updateUserEmail(emailInput.text)
+        }
+
         DBManager.updateUserIdCard(idcardInput.text)
         DBManager.updateUserPhone(phoneInput.text)
     }
