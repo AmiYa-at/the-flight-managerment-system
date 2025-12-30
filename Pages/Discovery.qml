@@ -89,7 +89,6 @@ ColumnLayout{
                 let index = posts_list[current_post_index]-1;
                 while(typeof post!=='object'||(typeof post==='object'&&(Object.keys(post).length===0))){
                     if(index===0){
-                        console.log(post_id);
                         order_message.info("没有帖子了");
                         return;
                     }

@@ -19,7 +19,7 @@ ColumnLayout{
         }
         HusAvatar{
             size:120
-            imageSource: ""
+            imageSource: "qrc:/new/images/yz.png"
         }
         HusAvatar{
             size:120

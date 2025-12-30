@@ -3,6 +3,7 @@
         <file>login.png</file>
         <file>register.png</file>
         <file>avatar_Amiya1145.jpg</file>
+        <file>yz.png</file>
     </qresource>
     <qresource prefix="/">
         <file>GlobalSettings.qml</file>
