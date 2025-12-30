@@ -20,6 +20,13 @@ ColumnLayout{
         id:flightList
     }
 
+    HusMessage{
+        id:order_message
+        z:999
+        Layout.fillWidth: true
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+    }
+
     ListView{
         Layout.fillHeight: true
         Layout.fillWidth: true
@@ -55,6 +62,17 @@ ColumnLayout{
         target: DBManager
 
         function onOperateResult(success,message){
+            if(success){
+                if(message.includes("创建订单成功")){
+                    order_message.success("购买成功!");
+                }
+                else if(message.includes("取消收藏成功")){
+                    order_message.success("取消收藏成功!");
+                }
+            }
+            else{
+                order_message.error(message);
+            }
             if((message.includes("取消收藏成功") || message.includes("创建订单成功")) && success){
                 get_favourite_flights();
             }

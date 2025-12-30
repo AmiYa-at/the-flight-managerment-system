@@ -140,11 +140,11 @@ HusRectangle{
                 }
             }
 
-            //收藏按钮
+            //取消收藏按钮
             HusIconText{
                 Layout.fillHeight: true
                 Layout.preferredWidth: 30
-                iconSource: hoverHandler.hovered? HusIcon.HeartFilled:HusIcon.HeartOutlined
+                iconSource: hoverHandler.hovered? HusIcon.HeartOutlined:HusIcon.HeartFilled
                 iconSize: parent.height
                 colorIcon: "red"
 

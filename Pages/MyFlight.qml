@@ -20,6 +20,13 @@ ColumnLayout{
         id:flightList
     }
 
+    HusMessage{
+        id:order_message
+        z:999
+        Layout.fillWidth: true
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+    }
+
     ListView{
         Layout.fillHeight: true
         Layout.fillWidth: true
@@ -57,7 +64,11 @@ ColumnLayout{
 
         function onOperateResult(success,message){
             if(message.includes("删除订单成功") && success){
+                order_message.success("取消收藏成功!");
                 get_order_flights();
+            }
+            else{
+                order_message.error(message);
             }
         }
     }

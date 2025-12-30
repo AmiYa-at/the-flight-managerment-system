@@ -8,8 +8,8 @@ Item {
     //暴露给外部传递的动态数据
     property var card_data:{
         "id": 0,
-        "title": "灰灰意识新奇",
-        "content": "卧槽元神？？？？",
+        "title": "仿佛走进了荒原",
+        "content": "要不试着发点东西？",
         "image_url": ""
     }
 
@@ -27,14 +27,14 @@ Item {
             height: 470
             width: parent.width
 
-            HusDivider{
+            /*HusDivider{
                 id:divider
                 width: parent.width
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 40
-            }
+            }*/
 
-            RowLayout{
+            /*RowLayout{
                 height: 27
                 width: parent.width
                 anchors.bottom: parent.bottom
@@ -64,7 +64,7 @@ Item {
                         iconSize: 30
                     }
                 }
-            }
+            }*/
         }
     }
 }

@@ -10,6 +10,14 @@ ColumnLayout{
 
     Layout.fillHeight: true
     Layout.fillWidth: true
+
+    HusMessage{
+        id:order_message
+        z:999
+        Layout.fillWidth: true
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+    }
+
     Loader{
         id:shared_card
         Layout.alignment: Qt.AlignHCenter
@@ -32,6 +40,10 @@ ColumnLayout{
                     }
                 }
             }
+            else{
+                order_message.clear();
+                order_message.info("没有帖子了");
+            }
         }
     }
     RowLayout{
@@ -43,6 +55,7 @@ ColumnLayout{
             iconSource: HusIcon.LeftOutlined
             iconSize: 10
             onClicked: {
+                console.log(current_post_index);
                 if(current_post_index>0){
                     current_post_index--;
                     let post = DBManager.queryPostDetail(posts_list[current_post_index],DBManager.getCurrentUserId());
@@ -56,6 +69,9 @@ ColumnLayout{
                     }
 
                 }
+                else{
+                    order_message.info("没有帖子了");
+                }
             }
         }
         HusIconButton{
@@ -64,11 +80,17 @@ ColumnLayout{
             iconSource: HusIcon.RightOutlined
             iconSize: 10
             onClicked: {
+                if(posts_list.length===0){
+                    order_message.info("没有帖子了");
+                    return;
+                }
+
                 let post;
                 let index = posts_list[current_post_index]-1;
                 while(typeof post!=='object'||(typeof post==='object'&&(Object.keys(post).length===0))){
                     if(index===0){
                         console.log(post_id);
+                        order_message.info("没有帖子了");
                         return;
                     }
 

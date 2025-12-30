@@ -40,6 +40,14 @@ ColumnLayout{
     Layout.fillWidth: true
     Layout.fillHeight: true
     spacing: 10
+
+    HusMessage{
+        id:order_message
+        z: 999
+        Layout.fillWidth: true
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+    }
+
     ColumnLayout {
         Layout.fillWidth: true
         //Layout.fillHeight: true
@@ -170,10 +178,18 @@ ColumnLayout{
         target: DBManager
 
         function onOperateResult(success,message){
-            if(message.includes("创建订单成功") && success){
-                searchFlight();
+            if(success){
+                if(message.includes("创建订单成功")){
+                    order_message.success("购买成功!");
+                    searchFlight();
+                }
+                else if(message.includes("收藏航班成功")){
+                    order_message.success("收藏航班成功!");
+                }
             }
-
+            else{
+                order_message.error(message);
+            }
         }
     }
 
