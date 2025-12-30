@@ -428,7 +428,7 @@ Window {
                 text: "忘记密码？"
                 flat: true
                 font.pointSize: 9
-                visible: dynamicBackground.state === loginState||dynamicBackground.state===adminState
+                visible: dynamicBackground.state === loginState
                 contentItem: Text {
                     text: parent.text
                     font: parent.font
@@ -856,8 +856,10 @@ Window {
         //注册处理
         if(dynamicBackground.state===registerState)
         {
+
             if(success===5)
             {
+                clearInputs()
                 messageText.state="register_success"
                 messageDialog.open()
                 return ;

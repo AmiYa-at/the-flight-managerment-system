@@ -10,6 +10,15 @@ HusWindow{
     //根窗口引用
     property var rootContainerRef: null
 
+    Connections{
+        target:DBManager
+
+        onAdminLogoutSuccess:{
+            rootContainerRef.createLoginWindow()
+            adminMainWindow.destroy()
+        }
+    }
+
     property var initModel :[]
     id:mainWindow
     width: 1080
@@ -124,7 +133,7 @@ HusWindow{
                         }
                         if(key==="my_settings")
                         {
-                            right_page.source="Settings.qml"
+                            right_page.source="AdminSettings.qml"
                         }
 
                         console.log("jimi");

@@ -16,6 +16,9 @@ ColumnLayout{
     HusButton{
         id:update
         text:"刷新"
+        onClicked:{
+            updateData()
+        }
     }
 
     HusDivider{

@@ -149,11 +149,20 @@ HusRectangle{
                 text: qsTr("取消订单")
                 type: HusButton.Type_Primary
                 Layout.preferredWidth: 100
-
+                colorBg: "red"
 
                 TapHandler{
                     target: parent
-                    onTapped: DBManager.deleteOrder(card_data.order_id)
+                    onTapped: {
+                        console.log(card_data.order_id)
+                        let flag=DBManager.deleteOrder(card_data.order_id)
+
+                        if(!flag)
+                        {
+                            console.log("错误")
+                        }
+
+                    }
                 }
             }
         }
