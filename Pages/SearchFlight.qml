@@ -45,6 +45,13 @@ ColumnLayout{
         //Layout.fillHeight: true
         spacing: 30
 
+        HusMessage{
+            id:send_m
+            z:999
+            width:parent.width
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+        }
+
         RowLayout {
             id: searchRow
             Layout.preferredHeight: 30
@@ -171,6 +178,7 @@ ColumnLayout{
 
         function onOperateResult(success,message){
             if(message.includes("创建订单成功") && success){
+                send_m.success("下单成功");
                 searchFlight();
             }
 
