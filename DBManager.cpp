@@ -1942,6 +1942,12 @@ QString DBManager::getCurrentUserIdCard() const
 // 更新当前用户的手机号
 bool DBManager::updateUserPhone(const QString& phone)
 {
+    for (const QChar &c : phone) {
+        if (!c.isNumber()) {
+            emit userPhoneUpdated(false, "手机号不能出现非数字");
+            return false;
+        }
+    }
     QSqlQuery query(m_db);
     query.prepare("UPDATE user_info SET phone = ? WHERE Uid = ?");
     query.addBindValue(phone);
@@ -1963,6 +1969,13 @@ bool DBManager::updateUserPhone(const QString& phone)
 // 更新当前用户的身份证号
 bool DBManager::updateUserIdCard(const QString& idCard)
 {
+    for (const QChar &c : idCard) {
+        if (!c.isNumber() && c != 'x' && c != 'X') {
+            emit userIdCardUpdated(false, "身份证号非法");
+            return false;
+        }
+    }
+
     QSqlQuery query(m_db);
     query.prepare("UPDATE user_info SET idcard = ? WHERE Uid = ?");
     query.addBindValue(idCard);
@@ -2050,13 +2063,13 @@ bool DBManager::updateUserName(const QString& newUserName) {
 
     if (newUserName.isEmpty()) {
         qDebug() << "用户名不能为空";
-        emit userNameUpdated(false, "用户名不能为空");
+        emit operateResult(false, "用户名不能为空");
         return false;
     }
 
     if (!m_db.isOpen()) {
         qDebug() << "数据库未连接";
-        emit userNameUpdated(false, "数据库未连接");
+        emit operateResult(false, "数据库未连接");
         return false;
     }
     m_db.transaction();
@@ -2071,19 +2084,19 @@ bool DBManager::updateUserName(const QString& newUserName) {
             m_db.rollback();
             QString errorMsg = query.lastError().text();
             qDebug() << "更新用户名失败:" << errorMsg;
-            emit userNameUpdated(false, "更新用户名失败: " + errorMsg);
+            emit operateResult(false, "更新用户名失败: " + errorMsg);
             return false;
         }
         if (query.numRowsAffected() <= 0) {
             m_db.rollback();
             qDebug() << "用户不存在或用户名未改变";
-            emit userNameUpdated(false, "用户不存在或用户名未改变");
+            emit operateResult(false, "用户不存在或用户名未改变");
             return false;
         }
         if (!m_db.commit()) {
             m_db.rollback();
             qDebug() << "事务提交失败";
-            emit userNameUpdated(false, "事务提交失败");
+            emit operateResult(false, "事务提交失败");
             return false;
         }
         QString oldUserName = m_currentUserName;
@@ -2095,17 +2108,29 @@ bool DBManager::updateUserName(const QString& newUserName) {
     } catch (const std::exception& e) {
         m_db.rollback();
         qDebug() << "更新用户名时发生异常:" << e.what();
-        emit userNameUpdated(false, QString("更新用户名时发生异常: %1").arg(e.what()));
+        emit operateResult(false, QString("更新用户名时发生异常: %1").arg(e.what()));
         return false;
     }
 }
 bool DBManager::updateUserEmail(const QString& newEmail) {
+    if (newEmail.isEmpty()) {
+        qDebug() << "邮箱不能为空";
+        emit operateResult(false, "邮箱不能为空");
+        return false;
+    }
 
     if (!m_db.isOpen()) {
         qDebug() << "数据库未连接";
         emit userEmailUpdated(false, "数据库未连接");
         return false;
     }
+
+    if (!isValidEmailFormat(newEmail)) {
+        QString errMsg = "更改失败：邮箱格式错误！";
+        emit userEmailUpdated(false, errMsg);
+        return false;
+    }
+
     m_db.transaction();
 
     try {

@@ -188,6 +188,8 @@ ColumnLayout{
             if(message.includes("创建订单成功") && success){
                 send_m.success("下单成功");
                 searchFlight();
+            }
+
             if(success){
                 if(message.includes("创建订单成功")){
                     order_message.success("购买成功!");
@@ -198,10 +200,10 @@ ColumnLayout{
                 }
             }
             else{
-                order_message.error(message);
+                order_message.info(message);
             }
         }
     }
 
-
 }
+
