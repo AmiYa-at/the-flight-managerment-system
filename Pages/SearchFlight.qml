@@ -20,7 +20,10 @@ ColumnLayout{
         {value:"上海",label:qsTr("上海")},
         {value:"广州",label:qsTr("广州")},
         {value:"长沙",label:qsTr("长沙")},
-        {value:"深圳",label:qsTr("深圳")}
+        {value:"深圳",label:qsTr("深圳")},
+        {value:"成都",label:qsTr("成都")},
+        {value:"杭州",label:qsTr("杭州")},
+        {value:"西安",label:qsTr("西安")}
     ]
 
     property var destinationList: [
@@ -29,7 +32,10 @@ ColumnLayout{
         {value:"上海",label:qsTr("上海")},
         {value:"广州",label:qsTr("广州")},
         {value:"长沙",label:qsTr("长沙")},
-        {value:"深圳",label:qsTr("深圳")}
+        {value:"深圳",label:qsTr("深圳")},
+        {value:"成都",label:qsTr("成都")},
+        {value:"杭州",label:qsTr("杭州")},
+        {value:"西安",label:qsTr("西安")}
     ]
 
     // 航班号结果
@@ -133,11 +139,19 @@ ColumnLayout{
         Layout.fillWidth: true
     }
     ListView{
+        id:lv
         Layout.fillHeight: true
         Layout.fillWidth: true
         clip: true
         spacing: 5
         model: flightList
+        ScrollBar.vertical: ScrollBar{
+            id:verticalScrollBar
+            policy: ScrollBar.AlwaysOn
+            size:lv.visibleArea.heightRatio
+            position: lv.visibleArea.yPosition
+            active: true
+        }
 
         delegate: FlightInformationCard{
             required property var modelData
@@ -202,6 +216,12 @@ ColumnLayout{
             else{
                 order_message.info(message);
             }
+        }
+
+        function onOrderCreatedFailed(message){
+            if(message.includes("该航班已取消，无法购买")){
+                    order_message.error("该航班已取消，无法购买");
+                }
         }
     }
 

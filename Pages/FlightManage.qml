@@ -9,6 +9,13 @@ ColumnLayout{
     Layout.fillWidth: true
     spacing:10
 
+    HusMessage{
+        id:flight_message
+        z: 999
+        Layout.fillWidth: true
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+    }
+
     property var add_data:{
         "flight_id":"",
         "departure":"",
@@ -27,7 +34,10 @@ ColumnLayout{
         {value:"上海",label:qsTr("上海")},
         {value:"广州",label:qsTr("广州")},
         {value:"长沙",label:qsTr("长沙")},
-        {value:"深圳",label:qsTr("深圳")}
+        {value:"深圳",label:qsTr("深圳")},
+        {value:"成都",label:qsTr("成都")},
+        {value:"杭州",label:qsTr("杭州")},
+        {value:"西安",label:qsTr("西安")}
     ]
 
     property var destinationList: [
@@ -36,7 +46,10 @@ ColumnLayout{
         {value:"上海",label:qsTr("上海")},
         {value:"广州",label:qsTr("广州")},
         {value:"长沙",label:qsTr("长沙")},
-        {value:"深圳",label:qsTr("深圳")}
+        {value:"深圳",label:qsTr("深圳")},
+        {value:"成都",label:qsTr("成都")},
+        {value:"杭州",label:qsTr("杭州")},
+        {value:"西安",label:qsTr("西安")}
     ]
 
     function validateAddData(data) {
@@ -348,11 +361,19 @@ ColumnLayout{
         id:flightList
     }
     ListView{
+        id:lv
         Layout.fillHeight: true
         Layout.fillWidth: true
         spacing: 5
         clip:true
         model: flightList
+        ScrollBar.vertical: ScrollBar{
+            id:verticalScrollBar
+            policy: ScrollBar.AlwaysOn
+            size:lv.visibleArea.heightRatio
+            position: lv.visibleArea.yPosition
+            active: true
+        }
 
         delegate: FlightManageCard{
             required property var modelData
@@ -382,6 +403,8 @@ ColumnLayout{
         }
     }
 
+
+
     //初始化
     Component.onCompleted: updateData()
 
@@ -404,6 +427,10 @@ ColumnLayout{
             {
                 updateData()
                 return ;
+            }
+            if(message.includes("添加失败"))
+            {
+                flight_message.error("添加失败，存在非法输入")
             }
         }
     }

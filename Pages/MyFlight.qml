@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import HuskarUI.Basic
+import QtQuick.Controls
 import "../Components"
 
 ColumnLayout{
@@ -28,12 +29,20 @@ ColumnLayout{
     }
 
     ListView{
+        id:lv
         Layout.fillHeight: true
         Layout.fillWidth: true
         clip: true
         Layout.topMargin: 30
         spacing: 5
         model: flightList
+        ScrollBar.vertical: ScrollBar{
+            id:verticalScrollBar
+            policy: ScrollBar.AlwaysOn
+            size:lv.visibleArea.heightRatio
+            position: lv.visibleArea.yPosition
+            active: true
+        }
 
         delegate: MyFlightCard{
             required property var modelData

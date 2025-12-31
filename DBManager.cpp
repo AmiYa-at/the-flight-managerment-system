@@ -565,7 +565,7 @@ QVariantList DBManager::queryAllFlights()
         SELECT Flight_id, Departure, Destination, depart_time, arrive_time,
                status, price, total_seats, remain_seats
         FROM flight
-        ORDER BY depart_time DESC
+        ORDER BY update_time DESC
     )";
 
     if (!query.prepare(sql)) {
@@ -2010,13 +2010,36 @@ bool DBManager::createOrder(int userId, const QString &flightId, const QString& 
         return false;
     }
 
-    // 2. 原子扣减余票（解决超卖）
+    QSqlQuery statusQuery(m_db);
+    statusQuery.prepare("SELECT status FROM flight WHERE Flight_id = ?");
+    statusQuery.addBindValue(flightId);
+    if (!statusQuery.exec()) {
+        m_db.rollback();
+        qCritical() << "查询航班状态失败：" << statusQuery.lastError().text();
+        emit orderCreatedFailed("创建订单失败：查询航班状态失败");
+        return false;
+    }
+
+    // 检查航班是否存在 + 状态是否为取消
+    if (!statusQuery.next()) {
+        m_db.rollback();
+        emit orderCreatedFailed("航班不存在");
+        return false;
+    }
+    int flightStatus = statusQuery.value(0).toInt();
+    if (flightStatus == 2) { // 状态2为取消
+        m_db.rollback();
+        emit orderCreatedFailed("该航班已取消，无法购买");
+        return false;
+    }
+
+    // 原子扣减余票（解决超卖）
     QSqlQuery flightQuery(m_db);
     flightQuery.prepare("UPDATE flight SET remain_seats = remain_seats - 1 WHERE Flight_id = ? AND remain_seats > 0");
     flightQuery.addBindValue(flightId);
     if (!flightQuery.exec() || flightQuery.numRowsAffected() == 0) {
         m_db.rollback();
-        emit orderCreatedFailed("航班已无余票或航班不存在");
+        emit orderCreatedFailed("航班已无余票");
         return false;
     }
 

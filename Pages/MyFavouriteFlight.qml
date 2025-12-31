@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import HuskarUI.Basic
+import QtQuick.Controls
 import "../Components"
 
 ColumnLayout{
@@ -28,12 +29,20 @@ ColumnLayout{
     }
 
     ListView{
+        id:lv
         Layout.fillHeight: true
         Layout.fillWidth: true
         clip: true
         Layout.topMargin: 30
         spacing: 5
         model: flightList
+        ScrollBar.vertical: ScrollBar{
+            id:verticalScrollBar
+            policy: ScrollBar.AlwaysOn
+            size:lv.visibleArea.heightRatio
+            position: lv.visibleArea.yPosition
+            active: true
+        }
 
         delegate: MyFavouriteFlightCard{
             required property var modelData
@@ -76,6 +85,12 @@ ColumnLayout{
             if((message.includes("取消收藏成功") || message.includes("创建订单成功")) && success){
                 get_favourite_flights();
             }
+        }
+
+        function onOrderCreatedFailed(message){
+            if(message.includes("该航班已取消，无法购买")){
+                    order_message.error("该航班已取消，无法购买");
+                }
         }
     }
 

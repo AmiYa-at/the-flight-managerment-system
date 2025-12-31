@@ -29,11 +29,19 @@ ColumnLayout{
     }
 
     ListView{
+        id:lv
         Layout.fillHeight: true
         Layout.fillWidth: true
         clip: true
         spacing: 5
         model: userList
+        ScrollBar.vertical: ScrollBar{
+            id:verticalScrollBar
+            policy: ScrollBar.AlwaysOn
+            size:lv.visibleArea.heightRatio
+            position: lv.visibleArea.yPosition
+            active: true
+        }
 
         delegate: UserCard{
             required property var modelData

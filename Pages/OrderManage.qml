@@ -26,12 +26,19 @@ ColumnLayout{
     }
 
     ListView{
+        id:lv
         Layout.fillHeight: true
         Layout.fillWidth: true
         spacing: 5
         clip:true
         model: orderList
-
+        ScrollBar.vertical: ScrollBar{
+            id:verticalScrollBar
+            policy: ScrollBar.AlwaysOn
+            size:lv.visibleArea.heightRatio
+            position: lv.visibleArea.yPosition
+            active: true
+        }
         delegate: MyFlightCard{
             required property var modelData
             height: 150
